@@ -109,6 +109,7 @@ const SortingVisualizer = ({
       setArray([...tempArr]);
       setSortedIndices((indices) => [...indices, i]);
     }
+    setSortedIndices((indices) => [...indices, 0]); // Ensure the first element is marked as sorted
     setActiveIndices([]);
     const endTime = performance.now();
     setTime(((endTime - startTime) / 1000).toFixed(2));
@@ -141,6 +142,7 @@ const SortingVisualizer = ({
       await quickSort(arr, pi + 1, high);
     }
     if (low === 0 && high === arr.length - 1) {
+      setSortedIndices(Array.from({ length: arr.length }, (_, i) => i)); // Ensure all elements are marked as sorted
       setActiveIndices([]);
       const endTime = performance.now();
       setTime(((endTime - startTime) / 1000).toFixed(2));
