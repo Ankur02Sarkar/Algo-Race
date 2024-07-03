@@ -232,13 +232,25 @@ const SortingVisualizer = ({
     let tempArr = [...arr];
     const startTime = performance.now();
 
-    const bucketSortHelper = (arr, size = 5) => {
+    const insertionSortHelper = async (arr) => {
+      for (let i = 1; i < arr.length; i++) {
+        let key = arr[i];
+        let j = i - 1;
+        while (j >= 0 && arr[j] > key) {
+          arr[j + 1] = arr[j];
+          j = j - 1;
+        }
+        arr[j + 1] = key;
+      }
+      return arr;
+    };
+
+    const bucketSortHelper = async (arr, bucketSize = 5) => {
       if (arr.length === 0) return arr;
 
       let i,
         minValue = arr[0],
-        maxValue = arr[0],
-        bucketSize = size;
+        maxValue = arr[0];
 
       arr.forEach((currentVal) => {
         if (currentVal < minValue) minValue = currentVal;
@@ -258,19 +270,20 @@ const SortingVisualizer = ({
         );
       });
 
-      arr.length = 0;
+      let sortedArray = [];
+      for (i = 0; i < allBuckets.length; i++) {
+        await insertionSortHelper(allBuckets[i]);
+        for (let j = 0; j < allBuckets[i].length; j++) {
+          sortedArray.push(allBuckets[i][j]);
+          setArray([...sortedArray, ...arr.slice(sortedArray.length)]);
+          await sleep(100 / speed);
+        }
+      }
 
-      allBuckets.forEach((bucket) => {
-        insertionSort(bucket);
-        bucket.forEach((element) => {
-          arr.push(element);
-        });
-      });
-
-      return arr;
+      return sortedArray;
     };
 
-    tempArr = bucketSortHelper(tempArr);
+    tempArr = await bucketSortHelper(tempArr);
     setArray([...tempArr]);
     setSortedIndices(Array.from({ length: tempArr.length }, (_, i) => i));
     setActiveIndices([]);
